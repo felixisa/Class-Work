@@ -1,14 +1,13 @@
 ;; The first three lines of this file were inserted by DrRacket. They record metadata
 ;; about the language level of this file in a form that our tools can easily process.
 #reader(lib "htdp-advanced-reader.ss" "lang")((modname Felix-Gracia-OLeary-Rachid-checking-accounts) (read-case-sensitive #t) (teachpacks ((lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #t #t none #f ((lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp")) #f)))
-; An account is an interface
-; 1. 'deposit: number -> (void)
-; 2. 'withdraw: number -> (void) 
-; 3. 'balance: -> number
-; 4. 'owner: -> symbol 
+; A checking account is an interface
+; 1. 'deposit: number account -> (void) or "Cannot Deposit Negative Amount"
+; 2. 'withdraw: number account -> (void) or "Insufficient Balance to Withdraw ~s"
+; 3. 'balance: account -> number
+; 4. 'owner: account -> symbol 
 
-; owner is a symbol
-; balance is a number 
+; An account is a structure, (make-account o b), where o is a symbol and b is a number
 (define-struct account (owner balance)) 
 
 (define (make-check-acc n)
@@ -52,6 +51,10 @@
                 (balance account1))
               300)
 
+(check-error (begin
+                (deposit -2000 account3))
+              "Cannot Deposit Negative Amount")
+
 ; withdraw: number account -> void
 ; Purpose: wrap function to withdraw 
 (define (withdraw number acc)
@@ -61,6 +64,10 @@
                 (withdraw 300 account1)
                 (balance account1))
               0)
+
+(check-error (begin
+                (withdraw 2500 account3))
+              "Insufficient Balance to Withdraw 2500")
 
 ; owner: account -> symbol
 ; Purpose: wrap function to inquire owner 
@@ -78,6 +85,13 @@
                 (deposit 0 account1)
                 (balance account1))
               0)
+
+(check-expect (begin
+                (deposit 2000 account4)
+                (withdraw 1200 account4)
+                (deposit 1000 account4)
+                (balance account4))
+              1800)
 
 (define account1 (make-check-acc 'Isabella))
 (define account2 (make-check-acc 'Mohamed))
