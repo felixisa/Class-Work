@@ -1,6 +1,6 @@
 ;; The first three lines of this file were inserted by DrRacket. They record metadata
 ;; about the language level of this file in a form that our tools can easily process.
-#reader(lib "htdp-advanced-reader.ss" "lang")((modname |checking accounts|) (read-case-sensitive #t) (teachpacks ((lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #t #t none #f ((lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp")) #f)))
+#reader(lib "htdp-advanced-reader.ss" "lang")((modname Felix-Gracia-OLeary-Rachid-checking-accounts) (read-case-sensitive #t) (teachpacks ((lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #t #t none #f ((lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp")) #f)))
 ; An account is an interface
 ; 1. 'deposit: number -> (void)
 ; 2. 'withdraw: number -> (void) 
@@ -21,7 +21,7 @@
           ; Effect: Increases account balance by given amount 
           (define (deposit a)
             (local [(define u (if (negative? a)
-                                  (error "you can't deposit a negative amount, silly goose!")
+                                  (error "Cannot Deposit Negative Amount")
                                   (set-account-balance! my-check-acc (+ a (account-balance my-check-acc)))))]
               (void)))
           
@@ -30,7 +30,7 @@
           ; Effect: Decreases account balance by given amount
           (define (withdraw a)
             (local [(define u (if (> a (account-balance my-check-acc))
-                                  (error "you are too broke to withdraw that much, honey")
+                                  (error (format "Insufficient Balance to Withdraw ~s" a))
                                   (set-account-balance! my-check-acc (- (account-balance my-check-acc) a))))]
               (void))) 
           
@@ -39,7 +39,7 @@
                   [(eq? msg 'withdraw) withdraw]
                   [(eq? msg 'owner) (account-owner my-check-acc)]
                   [(eq? msg 'balance) (account-balance my-check-acc)]
-                  [else (error 'service-manager "Unknown service requested: " msg)]))]
+                  [else (error 'service-manager "Unknown Service Requested: " msg)]))]
     account-manager))
 
 ; deposit: number account -> void
@@ -48,8 +48,8 @@
   ((acc 'deposit) number))
 
 (check-expect (begin
-                (deposit 300 broke-bitch)
-                (balance broke-bitch))
+                (deposit 300 account1)
+                (balance account1))
               300)
 
 ; withdraw: number account -> void
@@ -58,8 +58,8 @@
   ((acc 'withdraw) number))
 
 (check-expect (begin
-                (withdraw 300 broke-bitch)
-                (balance broke-bitch))
+                (withdraw 300 account1)
+                (balance account1))
               0)
 
 ; owner: account -> symbol
@@ -67,7 +67,7 @@
 (define (owner acc)
   (acc 'owner))
 
-(check-expect (owner broke-bitch) 'Isabella)
+(check-expect (owner account2) 'Mohamed)
 
 ; balance: account -> number
 ; Purpose: wrap function to inquire balance 
@@ -75,11 +75,11 @@
   (acc 'balance))
 
 (check-expect (begin
-                (deposit 0 broke-bitch)
-                (balance broke-bitch))
+                (deposit 0 account1)
+                (balance account1))
               0)
 
-(define broke-bitch (make-check-acc 'Isabella))
-(define mo-money (make-check-acc 'Mohamed))
-(define on-jah-siel (make-check-acc 'Jasiel))
-(define garden-of-eden (make-check-acc 'Eden))
+(define account1 (make-check-acc 'Isabella))
+(define account2 (make-check-acc 'Mohamed))
+(define account3 (make-check-acc 'Jasiel))
+(define account4 (make-check-acc 'Eden))
