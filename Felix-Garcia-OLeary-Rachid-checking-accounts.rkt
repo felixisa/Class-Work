@@ -1,7 +1,7 @@
 ;; The first three lines of this file were inserted by DrRacket. They record metadata
 ;; about the language level of this file in a form that our tools can easily process.
-#reader(lib "htdp-advanced-reader.ss" "lang")((modname |are u fucking kidding me|) (read-case-sensitive #t) (teachpacks ((lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #t #t none #f ((lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp")) #f)))
-; Isabella Felix, Jasiel Garcia, Eden O'Leary, Mohamed Rachid
+#reader(lib "htdp-advanced-reader.ss" "lang")((modname Felix-Garcia-OLeary-Rachid-checking-accounts) (read-case-sensitive #t) (teachpacks ((lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #t #t none #f ((lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp")) #f)))
+; Isabella Felix, Mohamed Rachid, Jasiel Garcia, Eden O'Leary, 
 
 ; A checking account is an interface
 ; 1. 'deposit: number account -> (void) or "Cannot Deposit Negative Amount"
@@ -10,7 +10,7 @@
 ; 4. 'owner: account -> symbol 
 
 (define (make-check-acc n)
-  (local [; owner is a string used to maintain the name of a checking account 
+  (local [; owner is a string used to maintain the name of the owner of a checking account 
           (define owner n)
           ; balance is a number used to maintain the balance of a checking account 
           (define balance 0)
