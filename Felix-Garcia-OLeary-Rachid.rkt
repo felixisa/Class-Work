@@ -1,19 +1,19 @@
 ;; The first three lines of this file were inserted by DrRacket. They record metadata
 ;; about the language level of this file in a form that our tools can easily process.
-#reader(lib "htdp-advanced-reader.ss" "lang")((modname Felix-Gracia-OLeary-Rachid-checking-accounts) (read-case-sensitive #t) (teachpacks ((lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #t #t none #f ((lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp")) #f)))
+#reader(lib "htdp-advanced-reader.ss" "lang")((modname |are u fucking kidding me|) (read-case-sensitive #t) (teachpacks ((lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #t #t none #f ((lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp")) #f)))
+; Isabella Felix, Jasiel Garcia, Eden O'Leary, Mohamed Rachid
+
 ; A checking account is an interface
 ; 1. 'deposit: number account -> (void) or "Cannot Deposit Negative Amount"
 ; 2. 'withdraw: number account -> (void) or "Insufficient Balance to Withdraw ~s"
 ; 3. 'balance: account -> number
 ; 4. 'owner: account -> symbol 
 
-; An account is a structure, (make-account o b), where o is a symbol and b is a number
-(define-struct account (owner balance)) 
-
 (define (make-check-acc n)
-  (local [; check-acc: structure
-          ; Purpose: To maintain a structure containing owner name and balance
-          (define my-check-acc (make-account n 0))
+  (local [; owner is a string used to maintain the name of a checking account 
+          (define owner n)
+          ; balance is a number used to maintain the balance of a checking account 
+          (define balance 0)
 
           ; deposit: number -> (void)
           ; Purpose: To add an amount to the balance
@@ -21,24 +21,26 @@
           (define (deposit a)
             (local [(define u (if (negative? a)
                                   (error "Cannot Deposit Negative Amount")
-                                  (set-account-balance! my-check-acc (+ a (account-balance my-check-acc)))))]
+                                  (set! balance (+ a balance))))]
               (void)))
           
           ; withdraw: number -> (void) 
           ; Purpose: To subtract an amount from the balance 
           ; Effect: Decreases account balance by given amount
           (define (withdraw a)
-            (local [(define u (if (> a (account-balance my-check-acc))
+            (local [(define u (if (> a balance)
                                   (error (format "Insufficient Balance to Withdraw ~s" a))
-                                  (set-account-balance! my-check-acc (- (account-balance my-check-acc) a))))]
+                                  (set! balance (- balance a))))]
               (void))) 
-          
+
+          ; account-manager: a checking-account object
+          ; Purpose: To manage deposits, withdrawals, and inquiries of owner and balance 
           (define (account-manager msg)
             (cond [(eq? msg 'deposit) deposit]
                   [(eq? msg 'withdraw) withdraw]
-                  [(eq? msg 'owner) (account-owner my-check-acc)]
-                  [(eq? msg 'balance) (account-balance my-check-acc)]
-                  [else (error 'service-manager "Unknown Service Requested: " msg)]))]
+                  [(eq? msg 'owner) owner]
+                  [(eq? msg 'balance) balance]
+                  [else (error (format "account-manager: Unknown Service Requested: ~s" msg))]))]
     account-manager))
 
 ; deposit: number account -> void
@@ -52,8 +54,8 @@
               300)
 
 (check-error (begin
-                (deposit -2000 account3))
-              "Cannot Deposit Negative Amount")
+               (deposit -2000 account3))
+             "Cannot Deposit Negative Amount")
 
 ; withdraw: number account -> void
 ; Purpose: wrap function to withdraw 
@@ -66,8 +68,8 @@
               0)
 
 (check-error (begin
-                (withdraw 2500 account3))
-              "Insufficient Balance to Withdraw 2500")
+               (withdraw 2500 account3))
+             "Insufficient Balance to Withdraw 2500")
 
 ; owner: account -> symbol
 ; Purpose: wrap function to inquire owner 
@@ -92,6 +94,13 @@
                 (deposit 1000 account4)
                 (balance account4))
               1800)
+
+(check-expect (begin
+                (withdraw 1800 account4)
+                (balance account4))
+              0)
+
+(check-error (account1 'help) "account-manager: Unknown Service Requested: help")
 
 (define account1 (make-check-acc 'Isabella))
 (define account2 (make-check-acc 'Mohamed))
