@@ -79,6 +79,8 @@
                 V2)
               (vector 3 7 8 9 10 14 27 31 34 87))
 
+
+
 (define V500 (build-vector 500 (lambda (i) (random 1000000))))
 (define V1000 (build-vector 1000 (lambda (i) (random 1000000))))
 (define V1500 (build-vector 1500 (lambda (i) (random 1000000))))

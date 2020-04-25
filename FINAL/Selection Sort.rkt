@@ -1,22 +1,66 @@
 ;; The first three lines of this file were inserted by DrRacket. They record metadata
 ;; about the language level of this file in a form that our tools can easily process.
-#reader(lib "htdp-advanced-reader.ss" "lang")((modname Felix-Garcia-OLeary-Rachid-FINAL) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #t #t none #f () #f)))
-; f-on-vector: (vector X) ->
-; Purpose:
-#;(define (f-on-vector V)
-(local [; f-on-VINTV: int int ->
-; Purpose: For the given VINTV, ...
-(define (f-on-VINTV low high)
-(cond [(empty-VINTV? low high) ...]
-[else (vector-ref V high)...(f-on-VINTV low (sub1 high))]))
-; f-on-VINTV2: int int ->
-; Purpose: For the given VINTV2, ...
-(define (f-on-VINTV2 low high)
-(cond [(empty-VINTV2? low high) ...]
-[else (vector-ref V low)...(f-on-VINTV2 (add1 low) high)]))]
-...))
+#reader(lib "htdp-advanced-reader.ss" "lang")((modname |Selection Sort|) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #t #t none #f () #f)))
+(require "while.rkt")
 
-;; SELECTION SORT 
+;; SELECTION SORT
+
+; selection-sort!: (vectorof number) -> (void)
+; Purpose: To sort the array in non-decreasing order.
+; Effect: The elements of the array are rearranged in place.
+(define (selection-sort! V)
+  (local [; swap: natnum natnum -> (void)
+          ; Purpose: To swap V[i] and V[j]
+          ; Effect: Modify V[i] to contain the value of V[j] and vice versa
+          (define (swap! i j)
+            (local [(define temp (vector-ref V i))]
+              (begin
+                (vector-set! V i (vector-ref V j))
+                (vector-set! V j temp)))) 
+          ; select: natnum natnum -> natnum
+          ; Purpose: To return the index of the smallest element in the vector
+          (define (select low high)
+            (local [; natnum
+                    ; Purpose: the low index of the interval beign processed
+                    (define i (void))
+                    ; natnum
+                    ; Purpose: the high index of the interval being processed
+                    (define j (void))
+                    ; natnum
+                    ; Purpose: the lowest element in the interval being processed 
+                    (define smallest (void))]
+              (begin
+                (set! i low)
+                (set! j high)
+                (set! smallest low)
+                (while (< i j)
+                       (if (<= (vector-ref V i) (vector-ref V smallest))
+                           (set! smallest i)
+                           (set! smallest smallest))
+                       (set! i (add1 i))) ; close while 
+                smallest)))
+          ; natnum
+          ; Purpose: the low element of the interval being processed 
+          (define low (void))
+          ; natnum
+          ; Purpose: the high element of the interval being processed 
+          (define high (void))]
+    (begin
+      (set! low 0)
+      (set! high (sub1 (vector-length V)))
+      (while (< low high)
+             (if (> (vector-ref V low)
+                    (vector-ref V (select (add1 low) high)))
+                 (swap! low (select (add1 low) high))
+                 (set! low low))
+             (set! low (add1 low))))))
+
+(define v (vector 4 2 9 10 7))
+
+(check-expect (begin
+                (selection-sort! v)
+                v)
+             (vector 2 4 9 7 10)) 
 
 ;; VECTORS
 (define V500 (build-vector 500 (lambda (i) (random 1000000))))
@@ -51,7 +95,6 @@
 (define V15000 (build-vector 15000 (lambda (i) (random 1000000))))
 
 ;; TIMING 
-#|
 (begin
   (display "Selection Sort 500")
   (newline)
@@ -172,4 +215,3 @@
   (display "Selection Sort 15000")
   (newline)
   (time (selection-sort! V15000)))
-|#
