@@ -249,4 +249,4 @@
   (newline)
   (display "Insertion Sort 15000")
   (newline)
-  (time (insort-in-place! V15000)))
+  (time (insort-in-place! V15000))) 
