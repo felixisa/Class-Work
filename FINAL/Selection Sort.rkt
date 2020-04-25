@@ -36,7 +36,7 @@
                 (while (< i j)
                        (if (<= (vector-ref V i) (vector-ref V smallest))
                            (set! smallest i)
-                           (set! smallest smallest))
+                           (void))
                        (set! i (add1 i))) ; close while 
                 smallest)))
           ; natnum
@@ -52,7 +52,7 @@
              (if (> (vector-ref V low)
                     (vector-ref V (select (add1 low) high)))
                  (swap! low (select (add1 low) high))
-                 (set! low low))
+                 (void))
              (set! low (add1 low))))))
 
 (define v (vector 4 2 9 10 7))

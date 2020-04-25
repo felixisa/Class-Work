@@ -54,6 +54,42 @@
     
     (sort! 0 (sub1 (vector-length V)))))
 
+; insort-while!: (vector number) -> (void)
+; Purpose: To sort the given vector in non-decreasing order
+; Effect: To rearrange the elements of the given vector in non-decreasing order
+(define (insort-while! V)
+  (local [; swap: natnum natnum -> (void)
+          ; Purpose: To swap V[i] and V[j]
+          ; Effect: Modify V[i] to contain the value of V[j] and vice versa
+          (define (swap i j)
+            (local [(define temp (vector-ref V i))]
+              (begin
+                (vector-set! V i (vector-ref V j))
+                (vector-set! V j temp))))
+          ; insert!: VINTV2(natnum natnum) -> (void)
+          ; Purpose: For the given VINTV2, insert V[low] in V[low+1..high]
+          ; such that V[low..high] is in non-decreasing order
+          ; Effect: V elements are swapped until one is >= V[low] or
+          ; the given VINTV2 is empty
+          (define (insert! low high)
+            (cond [(empty-VINTV2? low high) (void)]
+                  [else (cond [(<= (vector-ref V low)
+                                   (vector-ref V (add1 low)))
+                               (void)]
+                              [else (begin (swap low (add1 low))
+                                           (insert! (add1 low) high))])]))
+
+          ; sort!: VINTV2(natnum natnum) -> (void)
+          ; Purpose: For the given VINTV2, sort V using insertion sort
+          ; Effect: Rearrange V elements in the given VINTV2 in non-decreasing order
+          (define (sort! low high)
+            (cond [(empty-VINTV2? low high) (void)]
+                  [else (begin
+                          (sort! (add1 low) high)
+                          (insert! low (sub1 high)))]))]
+    
+    (sort! 0 (sub1 (vector-length V)))))
+
 (define V1 (vector 10 3 7 17 11))
 
 (check-expect (begin
