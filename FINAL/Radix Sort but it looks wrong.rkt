@@ -221,15 +221,15 @@
              (set! i8 (+ i7 (bucket-size B7)))
              (set! i9 (+ i8 (bucket-size B8)))
              (bucket-dump! B0 V 0)
-             (bucket-dump! B1 V (if (zero? i1) 0 i1))
-             (bucket-dump! B2 V (if (zero? i2) 0 i2))
-             (bucket-dump! B3 V (if (zero? i3) 0 i3))
-             (bucket-dump! B4 V (if (zero? i4) 0 i4))
-             (bucket-dump! B5 V (if (zero? i5) 0 i5))
-             (bucket-dump! B6 V (if (zero? i6) 0 i6))
-             (bucket-dump! B7 V (if (zero? i7) 0 i7))
-             (bucket-dump! B8 V (if (zero? i8) 0 i8))
-             (bucket-dump! B9 V (if (zero? i9) 0 i9))
+             (bucket-dump! B1 V i1)
+             (bucket-dump! B2 V i2)
+             (bucket-dump! B3 V i3)
+             (bucket-dump! B4 V i4)
+             (bucket-dump! B5 V i5)
+             (bucket-dump! B6 V i6)
+             (bucket-dump! B7 V i7)
+             (bucket-dump! B8 V i8)
+             (bucket-dump! B9 V i9)
              (set! count (add1 count))
              (set! digit (* digit 10))
              )
@@ -280,7 +280,7 @@
 (define V15000 (build-vector 15000 (lambda (i) (random 1000000))))
 
 ;; TIMING 
-#;(begin
+(begin
   (display "Radix Sort 500")
   (newline)
   (time (radix-sort! V500))
