@@ -1,20 +1,22 @@
 ;; The first three lines of this file were inserted by DrRacket. They record metadata
 ;; about the language level of this file in a form that our tools can easily process.
-#reader(lib "htdp-advanced-reader.ss" "lang")((modname |Radix Sort|) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #t #t none #f () #f)))
+#reader(lib "htdp-advanced-reader.ss" "lang")((modname |Radix Sort but it looks wrong|) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #t #t none #f () #f)))
+(require "while.rkt")
+
 ; f-on-vector: (vector X) ->
 ; Purpose:
 #;(define (f-on-vector V)
-  (local [; f-on-VINTV: int int ->
-          ; Purpose: For the given VINTV, ...
-          (define (f-on-VINTV low high)
-            (cond [(empty-VINTV? low high) ...]
-                  [else (vector-ref V high)...(f-on-VINTV low (sub1 high))]))
-          ; f-on-VINTV2: int int ->
-          ; Purpose: For the given VINTV2, ...
-          (define (f-on-VINTV2 low high)
-            (cond [(empty-VINTV2? low high) ...]
-                  [else (vector-ref V low)...(f-on-VINTV2 (add1 low) high)]))]
-    ...))
+    (local [; f-on-VINTV: int int ->
+            ; Purpose: For the given VINTV, ...
+            (define (f-on-VINTV low high)
+              (cond [(empty-VINTV? low high) ...]
+                    [else (vector-ref V high)...(f-on-VINTV low (sub1 high))]))
+            ; f-on-VINTV2: int int ->
+            ; Purpose: For the given VINTV2, ...
+            (define (f-on-VINTV2 low high)
+              (cond [(empty-VINTV2? low high) ...]
+                    [else (vector-ref V low)...(f-on-VINTV2 (add1 low) high)]))]
+      ...))
 
 (define (empty-VINTV? low high) (> low high))
 (define (empty-VINTV2? low high) (> low high))
@@ -128,6 +130,123 @@
                                 (void)
                                 (void)))
 
+; radix-sort!: (vectorof number) -> (void)
+; Purpose: To sort the given vector in non-decreasing order
+; Effect: To rearrange the elements of the given vector in non-decreasing order
+(define (radix-sort! V)
+  (local [(define B0 (make-bucket (vector-length V)))
+          (define B1 (make-bucket (vector-length V)))
+          (define B2 (make-bucket (vector-length V)))
+          (define B3 (make-bucket (vector-length V)))
+          (define B4 (make-bucket (vector-length V)))
+          (define B5 (make-bucket (vector-length V)))
+          (define B6 (make-bucket (vector-length V)))
+          (define B7 (make-bucket (vector-length V)))
+          (define B8 (make-bucket (vector-length V)))
+          (define B9 (make-bucket (vector-length V)))
+          ; natnum
+          ; Since radix sort takes n steps, the length of the vector is the amount
+          ; of steps that it should take to sort the vector
+          (define n (void))
+          ; natnum
+          ; Purpose: To count the amount of steps so far
+          (define count (void))
+          ; natnum
+          ; Purpose: To keep track of the digit to bucketize
+          (define digit (void))
+          ; bucketize: (vectorof number) number -> (void)
+          ; Purpose: To bucketize the elements of a vector based on the current digit
+          (define (bucketize vect dig)
+            (local [; bucket-helper: int int -> (void)
+                    ; Purpose: To process the interval from low to high
+                    (define (bucket-helper low high dig)
+                      (cond [(> low high) (void)]
+                            [(= (modulo (floor (/ (vector-ref vect low) dig)) 10) 0)
+                             (begin (bucket-add! B0 (vector-ref vect low))
+                                    (bucket-helper (add1 low) high dig))]
+                            [(= (modulo (floor (/ (vector-ref vect low) dig)) 10) 1)
+                             (begin (bucket-add! B1 (vector-ref vect low))
+                                    (bucket-helper (add1 low) high dig))]
+                            [(= (modulo (floor (/ (vector-ref vect low) dig)) 10) 2)
+                             (begin (bucket-add! B2 (vector-ref vect low))
+                                    (bucket-helper (add1 low) high dig))]
+                            [(= (modulo (floor (/ (vector-ref vect low) dig)) 10) 3)
+                             (begin (bucket-add! B3 (vector-ref vect low))
+                                    (bucket-helper (add1 low) high dig))]
+                            [(= (modulo (floor (/ (vector-ref vect low) dig)) 10) 4)
+                             (begin (bucket-add! B4 (vector-ref vect low))
+                                    (bucket-helper (add1 low) high dig))]
+                            [(= (modulo (floor (/ (vector-ref vect low) dig)) 10) 5)
+                             (begin (bucket-add! B5 (vector-ref vect low))
+                                    (bucket-helper (add1 low) high dig))]
+                            [(= (modulo (floor (/ (vector-ref vect low) dig)) 10) 6)
+                             (begin (bucket-add! B6 (vector-ref vect low))
+                                    (bucket-helper (add1 low) high dig))]
+                            [(= (modulo (floor (/ (vector-ref vect low) dig)) 10) 7)
+                             (begin (bucket-add! B7 (vector-ref vect low))
+                                    (bucket-helper (add1 low) high dig))]
+                            [(= (modulo (floor (/ (vector-ref vect low) dig)) 10) 8)
+                             (begin (bucket-add! B8 (vector-ref vect low))
+                                    (bucket-helper (add1 low) high dig))]
+                            [else (begin (bucket-add! B9 (vector-ref vect low))
+                                         (bucket-helper (add1 low) high dig))]))]
+              (bucket-helper 0 (sub1 (vector-length vect)) dig)))
+
+          ; ok i know this is probably stupid but i literally can't think of how else to do it
+          ; all of these are indices for where to start dumping each bucket
+          ; B0 always get dumped at index 0 
+          (define i1 (void))
+          (define i2 (void))
+          (define i3 (void))
+          (define i4 (void))
+          (define i5 (void))
+          (define i6 (void))
+          (define i7 (void))
+          (define i8 (void))
+          (define i9 (void))
+          ]
+    (begin
+      (set! count 1)
+      (set! n (vector-length V))
+      (set! digit 1)
+      (while (not (> count n))
+             (bucketize V digit)
+             (set! i1 (bucket-size B0))
+             (set! i2 (+ i1 (bucket-size B1)))
+             (set! i3 (+ i2 (bucket-size B2)))
+             (set! i4 (+ i3 (bucket-size B3)))
+             (set! i5 (+ i4 (bucket-size B4)))
+             (set! i6 (+ i5 (bucket-size B5)))
+             (set! i7 (+ i6 (bucket-size B6)))
+             (set! i8 (+ i7 (bucket-size B7)))
+             (set! i9 (+ i8 (bucket-size B8)))
+             (bucket-dump! B0 V 0)
+             (bucket-dump! B1 V (if (zero? i1) 0 i1))
+             (bucket-dump! B2 V (if (zero? i2) 0 i2))
+             (bucket-dump! B3 V (if (zero? i3) 0 i3))
+             (bucket-dump! B4 V (if (zero? i4) 0 i4))
+             (bucket-dump! B5 V (if (zero? i5) 0 i5))
+             (bucket-dump! B6 V (if (zero? i6) 0 i6))
+             (bucket-dump! B7 V (if (zero? i7) 0 i7))
+             (bucket-dump! B8 V (if (zero? i8) 0 i8))
+             (bucket-dump! B9 V (if (zero? i9) 0 i9))
+             (set! count (add1 count))
+             (set! digit (* digit 10))
+             )
+      (void))))
+
+(define v (vector 989 82 67 50 103 4))
+(check-expect (begin
+                (radix-sort! v)
+                v)
+              (vector 4 50 67 82 103 989))
+
+(define v1 (vector 677 577 777 377))
+(check-expect (begin
+                (radix-sort! v1)
+                v1)
+              (vector 377 577 677 777))
+
 ;; VECTORS
 (define V500 (build-vector 500 (lambda (i) (random 1000000))))
 (define V1000 (build-vector 1000 (lambda (i) (random 1000000))))
@@ -161,8 +280,7 @@
 (define V15000 (build-vector 15000 (lambda (i) (random 1000000))))
 
 ;; TIMING 
-#|
-(begin
+#;(begin
   (display "Radix Sort 500")
   (newline)
   (time (radix-sort! V500))
@@ -282,4 +400,3 @@
   (display "Radix Sort 15000")
   (newline)
   (time (radix-sort! V15000)))
-|#
