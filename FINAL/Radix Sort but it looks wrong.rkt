@@ -147,32 +147,48 @@
           (define digit (void))
           ; bucketize: (vectorof number) number -> (void)
           ; Purpose: To bucketize the elements of a vector based on the current digit
-          (define (bucketize v dig)
-            (local [(define (bucket-help low high dig)
-                      (if (> low high) (void) 
+          (define (bucketize low dig)
+                      (if (> low (sub1 (vector-length V))) (void) 
                           (begin (bucket-add!
-                                  (vector-ref b-vect (modulo (floor (/ (vector-ref v low) dig)) 10))
-                                  (vector-ref v low))
-                                 (bucket-help (add1 low) high dig))))]
-              (bucket-help 0 (sub1 (vector-length v)) dig)))
+                                  (vector-ref b-vect (modulo (floor (/ (vector-ref V low) dig)) 10))
+                                  (vector-ref V low))
+                                 (bucketize (add1 low) dig))))
 
           ; debucketize: (vectorof number) (vectorof bucket) -> (void) 
           ; Purpose: To dump each bucket of the vector of buckets into the vector of number in order 
-          (define (debucketize v bv)
-            (local [(define (debuck-help bvlow bvhigh d-index)
-                      (if (empty-VINTV? bvlow bvhigh) (void)
-                            (begin
-                              (bucket-dump! (vector-ref bv bvlow) v d-index)
-                              (debuck-help (add1 bvlow) bvhigh (+ (bucket-size (vector-ref bv bvlow)) d-index)))))]
-              (debuck-help 0 (sub1 (vector-length bv)) 0)))
-          ]
+          (define (debucketize bvlow d-index)
+            (if (empty-VINTV? bvlow (sub1 (vector-length b-vect)))
+                (void)
+                (local [(define new-d-index (+ (bucket-size (vector-ref b-vect bvlow)) d-index))]
+                  (begin
+                    (bucket-dump! (vector-ref b-vect bvlow) V d-index)
+                    (debucketize (add1 bvlow) new-d-index)))))
+
+          ; most-dig: (vectorof number) -> number
+          ; Purpose: To find the length of the largest number in a vector
+          (define (most-dig v)
+            (local [; most-dig-help: natnum natnum number -> number
+                    ; Purpose:
+                    ; accum is the largest number so far
+                    (define (most-dig-help low high accum)
+                      (cond [(empty-VINTV? low high) accum]
+                            [(> (vector-ref v low) accum) (most-dig-help (add1 low) high (vector-ref v low))]
+                           [else (most-dig-help (add1 low) high accum)]))
+                    ; count-digits: num -> num
+                    ; Purpose: Count the number of digits in a number
+                    (define(count-digits num accum)
+                      (if (< num 10) (+ 1 accum)
+                          (count-digits (/ num 10) (+ 1 accum))))]
+              (count-digits (most-dig-help 0 (sub1 (vector-length v)) 0) 0)))
+                    
+          ] 
     (begin
       (set! count 1)
-      (set! n (vector-length V))
+      (set! n (most-dig V))
       (set! digit 1)
       (while (not (> count n))
-             (bucketize V digit)
-             (debucketize V b-vect)
+             (bucketize 0 digit)
+             (debucketize 0 0)
              (set! count (add1 count))
              (set! digit (* digit 10))
              )
