@@ -134,16 +134,7 @@
 ; Purpose: To sort the given vector in non-decreasing order
 ; Effect: To rearrange the elements of the given vector in non-decreasing order
 (define (radix-sort! V)
-  (local [(define B0 (make-bucket (vector-length V)))
-          (define B1 (make-bucket (vector-length V)))
-          (define B2 (make-bucket (vector-length V)))
-          (define B3 (make-bucket (vector-length V)))
-          (define B4 (make-bucket (vector-length V)))
-          (define B5 (make-bucket (vector-length V)))
-          (define B6 (make-bucket (vector-length V)))
-          (define B7 (make-bucket (vector-length V)))
-          (define B8 (make-bucket (vector-length V)))
-          (define B9 (make-bucket (vector-length V)))
+  (local [(define b-vect (build-vector 10 (lambda (i) (make-bucket (vector-length V)))))
           ; natnum
           ; Since radix sort takes n steps, the length of the vector is the amount
           ; of steps that it should take to sort the vector
@@ -156,54 +147,24 @@
           (define digit (void))
           ; bucketize: (vectorof number) number -> (void)
           ; Purpose: To bucketize the elements of a vector based on the current digit
-          (define (bucketize vect dig)
-            (local [; bucket-helper: int int -> (void)
-                    ; Purpose: To process the interval from low to high
-                    (define (bucket-helper low high dig)
-                      (cond [(> low high) (void)]
-                            [(= (modulo (floor (/ (vector-ref vect low) dig)) 10) 0)
-                             (begin (bucket-add! B0 (vector-ref vect low))
-                                    (bucket-helper (add1 low) high dig))]
-                            [(= (modulo (floor (/ (vector-ref vect low) dig)) 10) 1)
-                             (begin (bucket-add! B1 (vector-ref vect low))
-                                    (bucket-helper (add1 low) high dig))]
-                            [(= (modulo (floor (/ (vector-ref vect low) dig)) 10) 2)
-                             (begin (bucket-add! B2 (vector-ref vect low))
-                                    (bucket-helper (add1 low) high dig))]
-                            [(= (modulo (floor (/ (vector-ref vect low) dig)) 10) 3)
-                             (begin (bucket-add! B3 (vector-ref vect low))
-                                    (bucket-helper (add1 low) high dig))]
-                            [(= (modulo (floor (/ (vector-ref vect low) dig)) 10) 4)
-                             (begin (bucket-add! B4 (vector-ref vect low))
-                                    (bucket-helper (add1 low) high dig))]
-                            [(= (modulo (floor (/ (vector-ref vect low) dig)) 10) 5)
-                             (begin (bucket-add! B5 (vector-ref vect low))
-                                    (bucket-helper (add1 low) high dig))]
-                            [(= (modulo (floor (/ (vector-ref vect low) dig)) 10) 6)
-                             (begin (bucket-add! B6 (vector-ref vect low))
-                                    (bucket-helper (add1 low) high dig))]
-                            [(= (modulo (floor (/ (vector-ref vect low) dig)) 10) 7)
-                             (begin (bucket-add! B7 (vector-ref vect low))
-                                    (bucket-helper (add1 low) high dig))]
-                            [(= (modulo (floor (/ (vector-ref vect low) dig)) 10) 8)
-                             (begin (bucket-add! B8 (vector-ref vect low))
-                                    (bucket-helper (add1 low) high dig))]
-                            [else (begin (bucket-add! B9 (vector-ref vect low))
-                                         (bucket-helper (add1 low) high dig))]))]
-              (bucket-helper 0 (sub1 (vector-length vect)) dig)))
+          (define (bucketize v dig)
+            (local [(define (bucket-help low high dig)
+                      (if (> low high) (void) 
+                          (begin (bucket-add!
+                                  (vector-ref b-vect (modulo (floor (/ (vector-ref v low) dig)) 10))
+                                  (vector-ref v low))
+                                 (bucket-help (add1 low) high dig))))]
+              (bucket-help 0 (sub1 (vector-length v)) dig)))
 
-          ; ok i know this is probably stupid but i literally can't think of how else to do it
-          ; all of these are indices for where to start dumping each bucket
-          ; B0 always get dumped at index 0 
-          (define i1 (void))
-          (define i2 (void))
-          (define i3 (void))
-          (define i4 (void))
-          (define i5 (void))
-          (define i6 (void))
-          (define i7 (void))
-          (define i8 (void))
-          (define i9 (void))
+          ; debucketize: (vectorof number) (vectorof bucket) -> (void) 
+          ; Purpose: To dump each bucket of the vector of buckets into the vector of number in order 
+          (define (debucketize v bv)
+            (local [(define (debuck-help bvlow bvhigh d-index)
+                      (if (empty-VINTV? bvlow bvhigh) (void)
+                            (begin
+                              (bucket-dump! (vector-ref bv bvlow) v d-index)
+                              (debuck-help (add1 bvlow) bvhigh (+ (bucket-size (vector-ref bv bvlow)) d-index)))))]
+              (debuck-help 0 (sub1 (vector-length bv)) 0)))
           ]
     (begin
       (set! count 1)
@@ -211,25 +172,7 @@
       (set! digit 1)
       (while (not (> count n))
              (bucketize V digit)
-             (set! i1 (bucket-size B0))
-             (set! i2 (+ i1 (bucket-size B1)))
-             (set! i3 (+ i2 (bucket-size B2)))
-             (set! i4 (+ i3 (bucket-size B3)))
-             (set! i5 (+ i4 (bucket-size B4)))
-             (set! i6 (+ i5 (bucket-size B5)))
-             (set! i7 (+ i6 (bucket-size B6)))
-             (set! i8 (+ i7 (bucket-size B7)))
-             (set! i9 (+ i8 (bucket-size B8)))
-             (bucket-dump! B0 V 0)
-             (bucket-dump! B1 V i1)
-             (bucket-dump! B2 V i2)
-             (bucket-dump! B3 V i3)
-             (bucket-dump! B4 V i4)
-             (bucket-dump! B5 V i5)
-             (bucket-dump! B6 V i6)
-             (bucket-dump! B7 V i7)
-             (bucket-dump! B8 V i8)
-             (bucket-dump! B9 V i9)
+             (debucketize V b-vect)
              (set! count (add1 count))
              (set! digit (* digit 10))
              )
