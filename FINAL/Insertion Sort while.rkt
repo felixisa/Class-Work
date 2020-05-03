@@ -34,7 +34,7 @@
                 (set! l lo)
                 ; INV: l <= hi+1 & V[lo..l-1] elements <= V[l+1..hi]
                 ; V[l+1..hi] sorted non-decresing & V[lo..l-1] sorted non-decresing
-                (while (and (not (empty-VINTV? l hi))(> (vector-ref V l) (vector-ref V (add1 l))))
+                (while (and (not (empty-VINTV? l hi)) (> (vector-ref V l) (vector-ref V (add1 l))))
                        (begin
                          (swap! l (add1 l))
                          ; l <= hi & V[l+2..hi] is sorted in non-decresing order &

@@ -79,7 +79,11 @@
                 V2)
               (vector 3 7 8 9 10 14 27 31 34 87))
 
-
+(define v1 (vector 1324 584 2982 28 409 21 418 5))
+(check-expect (begin
+                (qs-in-place! v1)
+                v1)
+              (vector 5 21 28 409 418 584 1324 2982))
 
 (define V500 (build-vector 500 (lambda (i) (random 1000000))))
 (define V1000 (build-vector 1000 (lambda (i) (random 1000000))))

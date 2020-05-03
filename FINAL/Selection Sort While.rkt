@@ -55,6 +55,7 @@
                  (void))
              (set! low (add1 low))))))
 
+
 (define v (vector 4 2 9 10 7))
 
 (check-expect (begin
