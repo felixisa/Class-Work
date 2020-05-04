@@ -39,18 +39,21 @@
                    (begin
                      (vector-set! V i (vector-ref V j))
                      (vector-set! V j temp))))
+               
                ; small-index: VINTV(natnum natnum) natnum -> natnum
                ; Purpose: For the given VINTV, find largest index: V[k] <= pivot
                (define (small-index low high pivot)
                  (cond [(empty-VINTV? low high) low]
                        [else (cond [(<= (vector-ref V high) pivot) high]
                                    [else (small-index low (sub1 high) pivot)])]))
+               
                ; larger-index: VINTV2(natnum natnum) natnum -> natnum 
                ; Purpose: For the given VINTV2, find smallest index: V[k] > pivot else return high
                (define (larger-index low high pivot)
                  (cond [(empty-VINTV2? low high) high]
                        [else (cond [(> (vector-ref V low) pivot) low]
                                    [else (larger-index (add1 low) high pivot)])]))
+               
                ; separate!: VINTV(natnum natnum) natnum -> natnum
                ; Purpose: For the given VINTV, separate smaller and larger elements
                ; Effect: In V move elements <= pivot before elements > pivot.
@@ -63,13 +66,15 @@
               (begin
                 (local [(define pivot-pos (separate! low high low))]
                   (begin (swap pp pivot-pos) pivot-pos)))))
+          
           ; qs-aux!: VINTV(natnum natnum) -> (void)
           ; Purpose: For the given VINTV, sort V in non-decreasing order.
           ; Effect: The elements in the given interval are rearranged in place.
           (define (qs-aux! low high)
             (cond [(empty-VINTV? low high) (void)]
                   [else (local [(define pp (partition! low high low))]
-                          (begin (qs-aux! low (sub1 pp)) (qs-aux! (add1 pp) high)))]))]
+                          (begin (qs-aux! low (sub1 pp)) (qs-aux! (add1 pp) high)))]))
+          ]
     (qs-aux! 0 (sub1 (vector-length V)))))
 
 (define V2 (vector 10 34 3 8 27 14 9 31 7 87))
@@ -78,12 +83,6 @@
                 (qs-in-place! V2)
                 V2)
               (vector 3 7 8 9 10 14 27 31 34 87))
-
-(define v1 (vector 1324 584 2982 28 409 21 418 5))
-(check-expect (begin
-                (qs-in-place! v1)
-                v1)
-              (vector 5 21 28 409 418 584 1324 2982))
 
 (define V500 (build-vector 500 (lambda (i) (random 1000000))))
 (define V1000 (build-vector 1000 (lambda (i) (random 1000000))))
