@@ -52,7 +52,7 @@
           (define (max-child-index i j)
             (cond [(>= (vector-ref V i) (vector-ref V j)) i]
                   [else j]))
-    
+     
           ; trickle-down!: int int -> (void)
           ; Purpose: For the given VINTV, re-establish a heap rooted at low
           ; Effect: Vector elements are moved to have a heap rooted at low
@@ -66,7 +66,7 @@
                                 (vector-ref V low))
                             (void)]
                            [else
-                            (begin
+                            (begin 
                               (swap low lc-index) ; put parent and child in right order
                               (trickle-down! lc-index high))])]
                     [else (local [(define mc-index (max-child-index lc-index rc-index))]

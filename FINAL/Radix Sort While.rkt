@@ -3,25 +3,6 @@
 #reader(lib "htdp-advanced-reader.ss" "lang")((modname |Radix Sort While|) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #t #t none #f () #f)))
 (require "while.rkt")
 
-; f-on-vector: (vector X) ->
-; Purpose:
-#;(define (f-on-vector V)
-    (local [; f-on-VINTV: int int ->
-            ; Purpose: For the given VINTV, ...
-            (define (f-on-VINTV low high)
-              (cond [(empty-VINTV? low high) ...]
-                    [else (vector-ref V high)...(f-on-VINTV low (sub1 high))]))
-            ; f-on-VINTV2: int int ->
-            ; Purpose: For the given VINTV2, ...
-            (define (f-on-VINTV2 low high)
-              (cond [(empty-VINTV2? low high) ...]
-                    [else (vector-ref V low)...(f-on-VINTV2 (add1 low) high)]))]
-      ...))
-
-(define (empty-VINTV? low high) (> low high))
-(define (empty-VINTV2? low high) (> low high))
-
-
 ;; RADIX/BUCKET SORT
 
 ;A bucket has a (vectorof X) and the index of the next available position 
@@ -129,6 +110,21 @@
                                 (void)
                                 (void)
                                 (void)))
+
+; signature:
+; Purpose:
+; Effect:
+#;(define (f-while ...)
+  (local [ (define state-var1 (void))
+           ...
+           (define state-varN (void))]
+    (begin
+      (set! state-var1 ...)
+      ...
+      (set! state-varN ...)
+      (while <driver>
+             <while-body>)
+      <return-value>)))
 
 ; radix-sort!: (vectorof number) -> (void)
 ; Purpose: To sort the given vector in non-decreasing order

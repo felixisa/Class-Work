@@ -2,29 +2,28 @@
 ;; about the language level of this file in a form that our tools can easily process.
 #reader(lib "htdp-advanced-reader.ss" "lang")((modname |Heap Sort while|) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #t #t none #f () #f)))
 (require "while.rkt")
-; f-on-vector: (vector X) ->
+
+; signature:
 ; Purpose:
-#;(define (f-on-vector V)
-    (local [; f-on-VINTV: int int ->
-            ; Purpose: For the given VINTV, ...
-            (define (f-on-VINTV low high)
-              (cond [(empty-VINTV? low high) ...]
-                    [else (vector-ref V high)...(f-on-VINTV low (sub1 high))]))
-            ; f-on-VINTV2: int int ->
-            ; Purpose: For the given VINTV2, ...
-            (define (f-on-VINTV2 low high)
-              (cond [(empty-VINTV2? low high) ...]
-                    [else (vector-ref V low)...(f-on-VINTV2 (add1 low) high)]))]
-      ...))
+; Effect:
+#;(define (f-while ...)
+  (local [ (define state-var1 (void))
+           ...
+           (define state-varN (void))]
+    (begin
+      (set! state-var1 ...)
+      ...
+      (set! state-varN ...)
+      (while <driver>
+             <while-body>)
+      <return-value>)))
 
 (define (empty-VINTV? low high) (> low high))
-(define (empty-VINTV2? low high) (> low high))
 
 ;; HEAP SORT
 
 ; heap-sort!: (vectorof number) -> (void)
-; Purpose: To sort in non-decreasing order the given array in
-; place using heap sort
+; Purpose: To sort in non-decreasing order the given array in place using heap sort
 ; Effect: The given array has it's elements reorganized to be sorted
 (define (heap-sort! V)
   (local [; natnum natnum -> (void)
@@ -70,31 +69,39 @@
           ; Purpose: For the given VINTV, re-establish a heap rooted at low
           ; Effect: Vector elements are moved to have a heap rooted at low
           ; Assumption: The given VINTV is valid for V
+          ; Termination Argument: The design is based on structural recursion.
+          ; [i..j] is valid for V. i starts at low and j starts at high. Each time through the loop,
+          ; i is changed to the index of its biggest child. Eventually, i increases to a number that
+          ; has no children, terminating the loop. 
           (define (trickle-down! low high)
             (local [(define i (void))
                     (define j (void))]
               (begin
                 (set! i low)
                 (set! j high)
-                (while(and (not (> (add1 (* 2 i)) j))
-                              (not (<= (vector-ref V (add1 (* 2 i))) ; heap relationship exists
-                                       (vector-ref V i))))
-                         (if (> (+ (* 2 i) 2) j)
-                             (begin (swap i (add1 (* 2 i))) (set! i (add1 (* 2 i))))
-                             (local [(define mc-index (max-child-index (add1 (* 2 i)) (+ (* 2 i) 2)))]
-                               (if (>= (vector-ref V i) (vector-ref V mc-index))
-                                   (void); heap relation exists
-                                   (begin ; re-establish heap relationship
-                                     (swap i mc-index)
-                                     (set! i mc-index))))))
-                (void))))
-          
+                (while(and (not (> (add1 (* 2 i)) j)) ; i has children 
+                           (not (<= (vector-ref V (add1 (* 2 i))) ; i only has a left child and the heap relation doesn't exist
+                                    (vector-ref V i))))
+                      (if (> (+ (* 2 i) 2) j) ; if the index of i's right child is bigger than j
+                          (begin (swap i (add1 (* 2 i))) (set! i (add1 (* 2 i))))
+                          (local [(define mc-index (max-child-index (add1 (* 2 i)) (+ (* 2 i) 2)))]
+                            (if (>= (vector-ref V i) (vector-ref V mc-index))
+                                (void); heap relation exists
+                                (begin ; re-establish heap relationship
+                                  (swap i mc-index)
+                                  (set! i mc-index))))))
+                (void)))) 
+          ; int
+          ; Purpose: To maintain the high index 
           (define high (void))
           ]
+    ; Termination Argument: The design is based on structural recursion.
+    ; [0..high] is valid for V. high starts at (sub1 (vector-length V)). Each time through the loop high is
+    ; decreased by one. Eventually, h becomes less than 0 and the loops terminates. 
     (begin
-      (heapify! 1 (sub1 (vector-length V))) ; 0 has no parents → no need to heapify!
-      (set! high (sub1 (vector-length V)))
-      (while (not (empty-VINTV? 0 high))
+      (heapify! 1 (sub1 (vector-length V))) ; converts V into a heap such that each number is <= its root
+      (set! high (sub1 (vector-length V))) ; initialize high to be the (lengthof V) - 1
+      (while (not (empty-VINTV? 0 high)) ; while the high index is >= low, which stays at 0
              (swap 0 high) ; put largest element at end of given valid VINTV
              (trickle-down! 0 (sub1 high)) ; re-establish heap in rest of VINTV
              (set! high (sub1 high)))

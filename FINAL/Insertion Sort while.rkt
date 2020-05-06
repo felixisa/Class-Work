@@ -3,6 +3,21 @@
 #reader(lib "htdp-advanced-reader.ss" "lang")((modname |Insertion Sort while|) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #t #t none #f () #f)))
 (require "while.rkt")
 
+; signature:
+; Purpose:
+; Effect:
+#;(define (f-while ...)
+  (local [ (define state-var1 (void))
+           ...
+           (define state-varN (void))]
+    (begin
+      (set! state-var1 ...)
+      ...
+      (set! state-varN ...)
+      (while <driver>
+             <while-body>)
+      <return-value>)))
+
 (define (empty-VINTV? low high) (> low high))
 (define (empty-VINTV2? low high) (> low high))
 
@@ -49,12 +64,8 @@
                          ) ; closes while
                        ; ...
                        (void)))))
-          ; l <= hi & V[l] > V[l+1]
-          ; V[l+1..hi] sorted non-decreasing & V[lo..l-1] elements <= V[l+1..hi]
-          ; V[lo..l-1] is sorted in non-decresing
-                         
-
-          ; sort!: VINTV_V[natnum,natnum] --> (void)
+          
+          ; sort!: VINTV[natnum,natnum] --> (void)
           ; Purpose: To sort the given vector interval in non-decreasing order
           ; Effect: The elements in the given interval are rearranged in-place
           ; Termination Argument: The design is based on structural recursion.
@@ -68,7 +79,7 @@
                 (set! h high)
                 ; INV: V[h+1..high] is sorted in non-decreasing order & h >= low-1
                 (while (not (empty-VINTV? low h))
-                       ; h >= low & V[h+1..high] is sorted in non-decreasing order
+                       ; h >= low and V[h+1..high] is sorted in non-decreasing order
                        (insert! h (sub1 high))
                        ; h >= low AND V[h..high] is sorted in non-decreasing order
                        (set! h (sub1 h))
@@ -77,8 +88,8 @@
                        ; ==> h < low ==> h = low-1
                        ; ==> V[low..high] is sorted in non-decreasing order
                        (void)))))
-            ]
-(sort! 0 (sub1 (vector-length V)))))
+          ] 
+    (sort! 0 (sub1 (vector-length V)))))
 
 (define V (vector 3 1 2))
 (check-expect (begin

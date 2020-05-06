@@ -73,7 +73,9 @@
           (define (qs-aux! low high)
             (cond [(empty-VINTV? low high) (void)]
                   [else (local [(define pp (partition! low high low))]
-                          (begin (qs-aux! low (sub1 pp)) (qs-aux! (add1 pp) high)))]))
+                          (begin
+                            (qs-aux! low (sub1 pp))
+                            (qs-aux! (add1 pp) high)))]))
           ]
     (qs-aux! 0 (sub1 (vector-length V)))))
 

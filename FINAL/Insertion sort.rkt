@@ -4,17 +4,17 @@
 ; f-on-vector: (vector X) ->
 ; Purpose:
 #;(define (f-on-vector V)
-(local [; f-on-VINTV: int int ->
-; Purpose: For the given VINTV, ...
-(define (f-on-VINTV low high)
-(cond [(empty-VINTV? low high) ...]
-[else (vector-ref V high)...(f-on-VINTV low (sub1 high))]))
-; f-on-VINTV2: int int ->
-; Purpose: For the given VINTV2, ...
-(define (f-on-VINTV2 low high)
-(cond [(empty-VINTV2? low high) ...]
-[else (vector-ref V low)...(f-on-VINTV2 (add1 low) high)]))]
-...))
+  (local [; f-on-VINTV: int int ->
+          ; Purpose: For the given VINTV, ...
+          (define (f-on-VINTV low high)
+            (cond [(empty-VINTV? low high) ...]
+                  [else (vector-ref V high)...(f-on-VINTV low (sub1 high))]))
+          ; f-on-VINTV2: int int ->
+          ; Purpose: For the given VINTV2, ...
+          (define (f-on-VINTV2 low high)
+            (cond [(empty-VINTV2? low high) ...]
+                  [else (vector-ref V low)...(f-on-VINTV2 (add1 low) high)]))]
+    ...))
 
 (define (empty-VINTV? low high) (> low high))
 (define (empty-VINTV2? low high) (> low high))
@@ -25,7 +25,10 @@
 ; Purpose: To sort the given vector in non-decreasing order
 ; Effect: To rearrange the elements of the given vector in non-decreasing order
 (define (insort-in-place! V)
-  (local [(define (swap i j)
+  (local [; natnum natnum -> (void)
+          ; Purpose: To swap V's ith and jth elements
+          ; Effect: V[i] and V[j] are swapped
+          (define (swap i j)
             (local [(define temp (vector-ref V i))]
               (begin
                 (vector-set! V i (vector-ref V j))
@@ -54,9 +57,22 @@
     
     (sort! 0 (sub1 (vector-length V)))))
 
+(define V (vector 3 1 2))
+(check-expect (begin
+                (insort-in-place! V)
+                V)
+              (vector 1 2 3))
 
-;; TIMING
+(define V2 (vector 10 9 1 7 4 8))
+(check-expect (begin
+                (insort-in-place! V2)
+                V2)
+              (vector 1 4 7 8 9 10))
 
+;; TIMING ;;
+
+; display-times: number -> (void)
+; Purpose: To time vectors of size x up to 15000 inincrements of x 
 (define (display-times x)
   (cond [(> x 15000) (void)]
         [else (begin
