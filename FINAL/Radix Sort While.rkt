@@ -42,8 +42,8 @@
           ; Effect: i made 0; All bucket elems made void; D[j..bucketsize-1]=bucket elems
           (define (dump! D j)
             (local [(define (helper dlow dhigh vlow vhigh)
-                      (cond [(empty-VINTV2? vlow vhigh) (void)]
-                            [else (cond [(empty-VINTV2? dlow dhigh)
+                      (cond [(empty-VINTV? vlow vhigh) (void)]
+                            [else (cond [(empty-VINTV? dlow dhigh)
                                          (error "Dumping vector is too small")]
                                         [else (begin
                                                 (vector-set! D dlow (vector-ref V vlow))
@@ -115,16 +115,18 @@
 ; Purpose:
 ; Effect:
 #;(define (f-while ...)
-  (local [ (define state-var1 (void))
-           ...
-           (define state-varN (void))]
-    (begin
-      (set! state-var1 ...)
-      ...
-      (set! state-varN ...)
-      (while <driver>
-             <while-body>)
-      <return-value>)))
+    (local [ (define state-var1 (void))
+             ...
+             (define state-varN (void))]
+      (begin
+        (set! state-var1 ...)
+        ...
+        (set! state-varN ...)
+        (while <driver>
+               <while-body>)
+        <return-value>)))
+
+(define (empty-VINTV? low high) (> low high))
 
 ; radix-sort!: (vectorof number) -> (void)
 ; Purpose: To sort the given vector in non-decreasing order
@@ -144,21 +146,35 @@
           ; bucketize: (vectorof number) number -> (void)
           ; Purpose: To bucketize the elements of a vector based on the current digit
           (define (bucketize low dig)
-                      (if (> low (sub1 (vector-length V))) (void) 
-                          (begin (bucket-add!
-                                  (vector-ref b-vect (modulo (floor (/ (vector-ref V low) dig)) 10))
-                                  (vector-ref V low))
-                                 (bucketize (add1 low) dig))))
-
+            (local [; natnum
+                    ; Purpose: To maintain the low of the unsorted interval
+                    (define i (void))]
+              (begin
+                (set! i low)
+                (while (not (empty-VINTV? i (sub1 (vector-length V))))
+                       (bucket-add!
+                        (vector-ref b-vect (modulo (floor (/ (vector-ref V i) dig)) 10))
+                        (vector-ref V i))
+                       (set! i (add1 i))))))
+ 
           ; debucketize: (vectorof number) (vectorof bucket) -> (void) 
           ; Purpose: To dump each bucket of the vector of buckets into the vector of number in order 
           (define (debucketize bvlow d-index)
-            (if (empty-VINTV? bvlow (sub1 (vector-length b-vect)))
-                (void)
-                (local [(define new-d-index (+ (bucket-size (vector-ref b-vect bvlow)) d-index))]
-                  (begin
-                    (bucket-dump! (vector-ref b-vect bvlow) V d-index)
-                    (debucketize (add1 bvlow) new-d-index)))))
+            (local [; natnum
+                    ; Purpose: The low index of the unprocessed b-vect interval
+                    (define bvi (void))
+                    ; natnum
+                    ; Purpose: The dumping index
+                    (define dump@ (void))]
+              (begin
+                (set! bvi bvlow)
+                (set! dump@ d-index)
+                (while (not (empty-VINTV? bvi (sub1 (vector-length b-vect))))
+                       (local [(define new-d-index (+ (bucket-size (vector-ref b-vect bvi)) dump@))]
+                         (begin
+                           (bucket-dump! (vector-ref b-vect bvi) V dump@)
+                           (set! bvi (add1 bvi))
+                           (set! dump@ new-d-index)))))))
 
           ; most-dig: (vectorof number) -> number
           ; Purpose: To find the length of the largest number in a vector
@@ -169,7 +185,7 @@
                     (define (most-dig-help low high accum)
                       (cond [(empty-VINTV? low high) accum]
                             [(> (vector-ref v low) accum) (most-dig-help (add1 low) high (vector-ref v low))]
-                           [else (most-dig-help (add1 low) high accum)]))
+                            [else (most-dig-help (add1 low) high accum)]))
                     ; count-digits: num -> num
                     ; Purpose: Count the number of digits in a number
                     (define(count-digits num accum)
