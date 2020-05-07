@@ -75,21 +75,21 @@
           ; has no children, terminating the loop. 
           (define (trickle-down! low high)
             (local [(define i (void))
-                    (define j (void))]
+                    (define j (void))
+                    (define (left-child i) (add1 (* 2 i)))
+                    (define (right-child i) (+ (* 2 i) 2))]
               (begin
                 (set! i low)
                 (set! j high)
-                (while(and (not (> (add1 (* 2 i)) j)) ; i has children 
-                           (not (<= (vector-ref V (add1 (* 2 i))) ; i only has a left child and the heap relation doesn't exist
+                (while (and (not (> (left-child i) j)) ; i has children 
+                           (not (<= (vector-ref V (left-child i)) ; i only has a left child and the heap relation doesn't exist
                                     (vector-ref V i))))
-                      (if (> (+ (* 2 i) 2) j) ; if the index of i's right child is bigger than j
-                          (begin (swap i (add1 (* 2 i))) (set! i (add1 (* 2 i))))
-                          (local [(define mc-index (max-child-index (add1 (* 2 i)) (+ (* 2 i) 2)))]
-                            (if (>= (vector-ref V i) (vector-ref V mc-index))
-                                (void); heap relation exists
+                      (if (> (right-child i) j) ; if the index of i's right child is bigger than j
+                          (begin (swap i (left-child i)) (set! i (left-child i)))
+                          (local [(define mc-index (max-child-index (left-child i) (right-child i)))] 
                                 (begin ; re-establish heap relationship
                                   (swap i mc-index)
-                                  (set! i mc-index))))))
+                                  (set! i mc-index)))))
                 (void)))) 
           ; int
           ; Purpose: To maintain the high index 
@@ -107,6 +107,18 @@
              (set! high (sub1 high)))
       (void))))
              
+
+(define V (vector 3 1 2))
+(check-expect (begin
+                (heap-sort! V)
+                V)
+              (vector 1 2 3))
+
+(define V2 (vector 10 9 1 7 4 8))
+(check-expect (begin
+                (heap-sort! V2)
+                V2)
+              (vector 1 4 7 8 9 10))
 
 (define V3 (vector 25 30 40 3 1 2))
 
