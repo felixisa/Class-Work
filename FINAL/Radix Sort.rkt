@@ -177,8 +177,7 @@
                     ; count-digits: num -> num
                     ; Purpose: Count the number of digits in a number
                     (define(count-digits num accum)
-                      (if (< num 10) (+ 1 accum)
-                          (count-digits (/ num 10) (+ 1 accum))))]
+                      (if (< num 10) (+ 1 accum) (count-digits (/ num 10) (+ 1 accum))))]
               (count-digits (most-dig-help 0 (sub1 (vector-length v)) 0) 0)))
 
           ; sort!

@@ -8,7 +8,7 @@
 
 ; Intro II Midterm
 ; N-PUZZLE modified by
-; Isabella Felix, Jasiel Garcia, Eden O'Leary, and Mohamed Rachid 
+; Isabella Felix and Mohamed Rachid 
 
 ; N-PUZZLE BASE CODE CSAS-1115 Version 1.0
 ; Copyright (C) 2015 by Marco T. Morazan
