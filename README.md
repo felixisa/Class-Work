@@ -1,5 +1,5 @@
-# Class-Work
-Repository for group work completed in Intro II\
+# Intro-2
+Repository for group work completed in Intro to Program Design II\
 \
 The folder named "FINAL" contains the code for our Sorting Algorithms Final Project 
 
