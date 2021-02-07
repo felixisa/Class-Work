@@ -1,6 +1,6 @@
 ;; The first three lines of this file were inserted by DrRacket. They record metadata
 ;; about the language level of this file in a form that our tools can easily process.
-#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname Rachid-Garcia-OLeary-Felix-FSMquiz) (read-case-sensitive #t) (teachpacks ((lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp")) #f)))
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname |FSM quiz|) (read-case-sensitive #t) (teachpacks ((lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp")) #f)))
 ; Isabella Felix, Mohamed Rachid
 
 ; Grade: A
@@ -71,9 +71,11 @@
           ; Why do you have a conditional here?
           ; Is your and expression always true?
           (define (next-state st k trans)
-            (cond [(and (string=? st (transition-current trans))
-                        (string=? k (transition-key trans)))
-                   (transition-next trans)]))
+            ;(cond [(and (string=? st (transition-current trans))
+             ;           (string=? k (transition-key trans)))
+                   (transition-next trans)
+            ;])
+            )
 
           ; find-trans: FSM string -> (listof transitions) 
           ; Purpose: Finds the appropriate transition if it exists 
