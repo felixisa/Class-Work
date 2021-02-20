@@ -5,10 +5,6 @@
 
 ; Grade: A
 
-; Your design is almost perfect. My only concern
-; is your use of a conditional. See the comment in
-; your code.
-
 
 ;; Data Definitions ;;
 ; An FSM is a structure:
@@ -65,36 +61,23 @@
           (define final (fsm-final a-fsm))
           (define str (explode k))
 
-          ; next-state: state string transition -> state
-          ; Purpose: To determine the next state
-          
-          ; Why do you have a conditional here?
-          ; Is your and expression always true?
-          (define (next-state st k trans)
-            ;(cond [(and (string=? st (transition-current trans))
-             ;           (string=? k (transition-key trans)))
-                   (transition-next trans)
-            ;])
-            )
-
           ; find-trans: FSM string -> (listof transitions) 
           ; Purpose: Finds the appropriate transition if it exists 
-          (define (find-trans a-fsm k)
-            (filter (lambda (x) (and (string=? initial (transition-current x))
-                                     (string=? (first k) (transition-key x))))
+          (define (find-trans k)
+            (filter (lambda (x) (and (string=? initial (transition-current x)) ; only keep transitions whose first state match current state
+                                     (string=? (first k) (transition-key x)))) ; and whose key match the current letter of str
                     transitions))]
     
-    (cond [(and (empty? str)
-                (string=? initial final)) #t]
-          [(or (and (empty? str)
-                    (not (string=? initial final)))
-               (empty? (find-trans a-fsm str))) #f]
-          [else (fsm-match? (make-fsm (next-state initial
-                                                  (first str)
-                                                  (first (find-trans a-fsm str)))
-                                      transitions
-                                      final)
-                            (substring k 1 (string-length k)))])))
+    (cond [(and (empty? str) ; if string is empty/fully processed
+                (string=? initial final)) #t] ; and initial state has reached final state -> match
+          [(or (and (empty? str) ; if string has been fully processed 
+                    (not (string=? initial final))) ; and intial state does not match final state
+               (empty? (find-trans str))) #f] ; or there are no possible next transitions -> not a match
+          [else (fsm-match? (make-fsm (transition-next (first (find-trans str))) ; otherwise, recursive call using a new fsm
+                                      ; change initial state to be next state
+                                      transitions ; keep transitions
+                                      final) ; keep final state
+                            (substring k 1 (string-length k)))]))) ; and continue with the rest of the string 
 
 (check-expect (fsm-match? fsm-a-bc*-d "abcd") #t)
 (check-expect (fsm-match? fsm-a-bc*-d "ad") #t)
