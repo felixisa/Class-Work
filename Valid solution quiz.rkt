@@ -1,10 +1,10 @@
 ;; The first three lines of this file were inserted by DrRacket. They record metadata
 ;; about the language level of this file in a form that our tools can easily process.
-#reader(lib "htdp-advanced-reader.ss" "lang")((modname OLeary-Felix-Garcia-Rachid-valid-sol) (read-case-sensitive #t) (teachpacks ((lib "image.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #t #t none #f ((lib "image.rkt" "teachpack" "2htdp")) #f)))
+#reader(lib "htdp-advanced-reader.ss" "lang")((modname |Valid solution quiz|) (read-case-sensitive #t) (teachpacks ((lib "image.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #t #t none #f ((lib "image.rkt" "teachpack" "2htdp")) #f)))
 ; Mohamed Rachid, Isabella Felix
 
 ; Grade: A
-; Good job! See comment about testing.
+; Good job! 
 
 (require 2htdp/abstraction)
 
@@ -96,8 +96,6 @@
              (not (threatened? (first b) (rest b)))
              (valid-sol? (rest b)))])))
 
-; You should have tests with a (listof bpos) that is not a solution
-; for boards of size 3 and 4.
 (check-expect (valid-sol? (place-queens 0)) #true)
 (check-expect (valid-sol? (place-queens 1)) #true)
 (check-expect (place-queens 2) false)
@@ -105,4 +103,13 @@
 (check-expect (valid-sol? (place-queens 4)) #true)
 (check-expect (valid-sol? (place-queens 5)) #true)
 (check-expect (valid-sol? (place-queens 8)) #true)
+(check-expect (valid-sol? (list (make-posn 1 1)
+                    (make-posn 2 2)
+                    (make-posn 3 3)))
+              #f)
+(check-expect (valid-sol? (list (make-posn 1 1)
+                    (make-posn 2 2)
+                    (make-posn 3 3)
+                    (make-posn 4 4)))
+              #f)
 
