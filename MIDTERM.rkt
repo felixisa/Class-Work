@@ -1,6 +1,6 @@
 ;; The first three lines of this file were inserted by DrRacket. They record metadata
 ;; about the language level of this file in a form that our tools can easily process.
-#reader(lib "htdp-advanced-reader.ss" "lang")((modname |Rachid-Garcia-O'Leary-Felix-MIDTERM|) (read-case-sensitive #t) (teachpacks ((lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #t #t none #f ((lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp")) #f)))
+#reader(lib "htdp-advanced-reader.ss" "lang")((modname MIDTERM) (read-case-sensitive #t) (teachpacks ((lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #t #t none #f ((lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp")) #f)))
 
 ; Grade: A-
 
@@ -327,9 +327,6 @@
 ; manhattan distance, is selected as the most promising sequence and thus is explored first, avoiding uneccesary exploration of other boards.
 ; The children of this board are then added to the paths and the process of finding the most promising path is recursed, accumulating paths.
 ; On each recursive call, paths whose first element
-
-; This is incorrect. It is the visited children of the first board of the best path that are ignored.
-
 ; has been visited are ignored, avoiding the exploration of already explored boards.
 ; This also ensures an always finite number of boards, and as a a result, a finite number of paths that are explored.
 ; The function terminates when the best-path has eventually generated a child that is equal to the winning board. 
@@ -347,35 +344,31 @@
                     ; best-path-accum: (listof (listof board)) -> (listof (listof board))
                     ; Purpose: To find the most promising path (the path with the smallest manhattan distance) in a list of paths
                     ; ACCUM INVARIANT: accum is the path whose first element has the smallest manhattan distance found in the list of paths so far.
-
-                    ; This function is more complex than should be, because you never use (first lop). 
-                    
                     (define (best-path-accum accum lop)
-                      (cond [(null? (cdr lop)) accum]
-                            [(> (manhattan-distance (car accum))
-                                (manhattan-distance (caar (rest lop))))
-                             (best-path-accum (car (rest lop))
-                                              (cdr lop))]
-                            [else (best-path-accum accum (cdr lop))]))
+                      (cond [(null? lop) accum] ; if lop is fully processed, return accum which is the best path found
+                            [(> (manhattan-distance (car accum)) ; if the manhattan distance of the first board in the accum
+                                (manhattan-distance (caar lop))) ; is greater than the first board in the first in lop
+                             (best-path-accum (car lop) (cdr lop))] ; change accum to be the first path in lop
+                            [else (best-path-accum accum (cdr lop))])) ; otherwise, keep traversing
 
-                    (define best-path (best-path-accum (car paths)
-                                                       paths
-                                                       ; Why keep the first?
-                                                       )) 
+                    ; best-path calls best-path-accum to find the most promising path in a list of paths
+                    (define best-path (best-path-accum (car paths) ; accum starts as first in lop
+                                                       (cdr paths) ; lop starts as rest of lop
+                                                       ))  
+
+                    ; children generates a list of children that do not start with visited boards (i think)
                     (define children (filter (lambda (x) (not (member x visited)))
                                              (generate-children (car best-path))))
+                    ; new-paths generates a list of new paths by adding the children to the best path
                     (define new-paths (map (lambda (c) (cons c best-path))
                                            children))
                     ]
-              (cond [(equal? (car best-path) WIN) best-path]
-                    [else (search-paths
-                           (append (filter (lambda (x) (not (member x visited)))
-                                           ; x is a path. visited is a list of boards. Why are you trying to filter a path
-                                           ; from a list of boards? Nothing ever gets removed and can only make the game slow.
-                                           (remove best-path paths))
-                                   new-paths)
-                           (cons (car best-path) visited))])))
-          ]
+              (cond [(equal? (car best-path) WIN) best-path] ; if the first board in the path is a winning board, return that path
+                    [else (search-paths 
+                           (append (filter (lambda (x) (not (member (car x) visited))) (remove best-path paths)) ; remove paths with visited boards
+                                   new-paths) 
+                           (cons (car best-path) visited))]))) ; add first of best path to visited
+          ] 
     (reverse (search-paths (list (list b)) '()))))
 
 (check-expect (find-solution (list 1 2 3 4 5 6 7 8 0)) (list WIN))
