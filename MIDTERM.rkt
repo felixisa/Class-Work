@@ -320,7 +320,7 @@
   ; 2. (cons s l), where s is a sequence and l is a lseq
 
 
-; find-solution: board --> lseq
+; find-solution: board --> seq
 ; Purpose: To find a solution to the given board
 ; TERMINATION ARGUMENT: find-solution takes as input a single board and proceeds to create paths by creating the children
 ; of that board by exploring each possible move of the zero space. Then, the "best-path", or that whose first element has the smallest 
